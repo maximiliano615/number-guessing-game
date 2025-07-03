@@ -2,20 +2,24 @@ import random
 import json
 import time
 import os
+from errors import errors
 
 class save_score:
     def save(self,attempts, name):
         if os.path.exists("scores.json"):
+            solution_errors = errors().errors_with_save()
             with open("scores.json", "r") as f:
-                scores = {"name": name , "attempts": attempts}
+                scores = {"name": name , "attempts": attempts} 
                 scores_loaded = json.load(f)
-                scores = scores | scores_loaded
+                scores_loaded.append(scores)
+                print("game saved")
             with open("scores.json", "w") as f:
-                json.dump(scores, f, indent=4)
+                json.dump(scores_loaded, f, indent=4)
         else:
             with open("scores.json", "w") as f:
                 scores =  {"name": name , "attempts": attempts} 
-                json.dump(scores, f, indent=4)
+                lista = [scores]
+                json.dump(lista, f, indent=4)
 
     def load ():
         with open(scores.json, "r") as f:
@@ -67,25 +71,32 @@ class game:
                     print("ok, let's play again")
                 else:
                     print("please enter yes or no")
-            player_number = int(input("please enter your number: "))
-             
-            if player_number == number:
-                self.wins += 1
-                final_time = time.time()
-                print("you win!")
-                print(f"you won in {final_time - start_time} seconds")
-                save_score().save(attempts, self.name)
-                break
-            else:
-                print("you lose")
-                attempts += 1
-                if attempts == number_attempts:
-                    print("the game is over, you lost")
+            player_number = input("please enter your number: ")
+            solution_errors = errors().errors_with_int(player_number)
+            if solution_errors == True:
+                player_number = int(player_number)
+                if player_number == number:
+                    self.wins += 1
+                    final_time = time.time()
+                    print("you win!")
+                    print(f"you won in {final_time - start_time} seconds")
+                    save_score().save(attempts, self.name)
                     break
+                else:
+                    print("you lose")
+                    attempts += 1
+                    if attempts == number_attempts:
+                        print("the game is over, you lost")
+                        break
+            else:
+                continue
 
 
-primer = game("jose", "medium")
-primer.play()
+#primer = game("pedro", "medium")
+#primer.play()
+
+#segundo = game("jose", "easy")
+#segundo.play()
 
         
                     
